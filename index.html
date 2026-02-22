@@ -3,71 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badminton Cashier - Auto Profit</title>
+    <title>Badminton Pro - Fixed List</title>
     <style>
-        body { font-family: -apple-system, sans-serif; padding: 15px; background: #f0f4f8; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); max-width: 450px; margin: auto; }
-        h3 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
-        label { font-weight: bold; font-size: 14px; color: #555; }
-        input { width: 100%; padding: 12px; margin: 8px 0 18px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .member-row { display: flex; gap: 8px; margin-bottom: 12px; background: #f9f9f9; padding: 12px; border-radius: 10px; border: 1px solid #eee; }
-        button { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 16px; }
-        .btn-add { background: #e1f5fe; color: #0288d1; margin-bottom: 10px; }
-        .btn-calc { background: #0288d1; color: white; margin-top: 10px; }
-        .btn-calc:active { background: #01579b; }
-        .result { margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 10px; border-left: 5px solid #4caf50; white-space: pre-wrap; font-family: 'Courier New', Courier, monospace; font-weight: bold; display: none; }
+        body { font-family: -apple-system, sans-serif; padding: 15px; background: #f4f7f9; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+        h3 { text-align: center; color: #1a73e8; margin-bottom: 20px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .input-box { flex: 1; }
+        label { font-weight: bold; font-size: 12px; color: #666; display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        .member-row { display: flex; gap: 5px; margin-bottom: 8px; align-items: center; background: #fff; border: 1px solid #eee; padding: 5px; border-radius: 8px; }
+        .btn-del { background: #ff5252; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-size: 12px; }
+        button { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 16px; }
+        .btn-add { background: #e8f0fe; color: #1a73e8; }
+        .btn-calc { background: #1a73e8; color: white; margin-top: 15px; }
+        .result { margin-top: 20px; padding: 15px; background: #e6fffa; border-left: 5px solid #38b2ac; white-space: pre-wrap; font-family: monospace; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h3>🏸 TÍNH TIỀN CẦU LÔNG</h3>
+    <h3>🏸 QUẢN LÝ THU TIỀN</h3>
     
-    <div style="display: flex; gap: 10px;">
-        <div>
+    <div class="input-group">
+        <div class="input-box">
             <label>Tổng tiền sân ($):</label>
             <input type="number" id="tongTienSan" value="44">
         </div>
-        <div>
+        <div class="input-box">
             <label>Số quả cầu:</label>
             <input type="number" id="soCau" value="10">
         </div>
     </div>
 
+    <label style="margin-bottom: 10px; display: block;">Danh sách đánh hôm nay:</label>
     <div id="memberList">
-        <label>Thành viên (Tên | SL | Phút):</label>
-        <div class="member-row">
-            <input type="text" placeholder="Tên" class="m-name" value="Nhà K">
-            <input type="number" class="m-count" value="3" title="Số lượng người">
-            <input type="number" class="m-time" value="120" title="Số phút đánh">
         </div>
-        <div class="member-row">
-            <input type="text" placeholder="Tên" class="m-name" value="Sam">
-            <input type="number" class="m-count" value="1">
-            <input type="number" class="m-time" value="60">
-        </div>
-    </div>
     
-    <button class="btn-add" onclick="addMember()">+ Thêm Nhà/Người</button>
-    <button class="btn-calc" onclick="tinhTien()">XUẤT BILL</button>
+    <button class="btn-add" onclick="addMember('', 1, 120)">+ Thêm người ngoài danh sách</button>
+    <button class="btn-calc" onclick="tinhTien()">XUẤT BILL & LÀM TRÒN</button>
 
     <div id="ketQua" class="result"></div>
 </div>
 
 <script>
-    function addMember() {
+    const GIA_CAU = 2.5;
+    const danhSachGoc = [
+        {n: "Nhà Khương", c: 4}, {n: "Nhà Hà", c: 2}, {n: "Phát", c: 1},
+        {n: "Sam", c: 1}, {n: "Tân", c: 1}, {n: "Nhà Tèo", c: 2},
+        {n: "Nhà Tuấn", c: 2}, {n: "Anthony", c: 1}, {n: "Hoàng", c: 1}, {n: "Hải", c: 1}
+    ];
+
+    // Nạp danh sách khi mở app
+    const memberListDiv = document.getElementById('memberList');
+    danhSachGoc.forEach(item => addMember(item.n, item.c, 120));
+
+    function addMember(name = "", count = 1, time = 120) {
         const div = document.createElement('div');
         div.className = 'member-row';
-        div.innerHTML = `<input type="text" placeholder="Tên" class="m-name">
-                         <input type="number" class="m-count" value="1">
-                         <input type="number" class="m-time" value="120">`;
-        document.getElementById('memberList').appendChild(div);
+        div.innerHTML = `
+            <input type="text" placeholder="Tên" class="m-name" value="${name}" style="flex:2">
+            <input type="number" class="m-count" value="${count}" style="flex:0.6" title="SL">
+            <input type="number" class="m-time" value="${time}" style="flex:1" title="Phút">
+            <button class="btn-del" onclick="this.parentElement.remove()">❌</button>
+        `;
+        memberListDiv.appendChild(div);
     }
 
     function tinhTien() {
-        const giaCauMoiQua = 2.5;
         const tienSanGoc = parseFloat(document.getElementById('tongTienSan').value) || 0;
-        const tienCauGoc = (parseFloat(document.getElementById('soCau').value) || 0) * giaCauMoiQua;
+        const tienCauGoc = (parseFloat(document.getElementById('soCau').value) || 0) * GIA_CAU;
         
         const names = document.getElementsByClassName('m-name');
         const counts = document.getElementsByClassName('m-count');
@@ -80,7 +85,7 @@
         for (let i = 0; i < names.length; i++) {
             let name = names[i].value.trim();
             if (name !== "") {
-                let sl = parseFloat(counts[i].value) || 1;
+                let sl = parseFloat(counts[i].value) || 0;
                 let phut = parseFloat(times[i].value) || 0;
                 totalPlayers += sl;
                 totalMinutePoints += (sl * phut);
@@ -88,33 +93,30 @@
             }
         }
 
-        if (totalMinutePoints === 0 || totalPlayers === 0) return;
+        if (totalMinutePoints === 0) return;
 
         const giaMoiPhutSan = tienSanGoc / totalMinutePoints;
-        const tienCauMoiNguoi = tienCauGoc / totalPlayers;
+        const tienCauMoiNguoi = totalPlayers > 0 ? (tienCauGoc / totalPlayers) : 0;
 
         let totalCollect = 0;
-        let bill = `📝 CHI TIẾT THU TIỀN\n`;
-        bill += `--------------------------\n`;
+        let bill = `📝 BILL CHI TIẾT\n----------\n`;
         
         groups.forEach(g => {
             let tSan = g.sl * g.phut * giaMoiPhutSan;
             let tCau = g.sl * tienCauMoiNguoi;
             let rawTotal = tSan + tCau;
             
-            // LOGIC LÀM TRÒN LÊN (ROUND UP) 1 CHỮ SỐ THẬP PHÂN
-            // Ví dụ: 11.71 -> 11.8 | 11.7001 -> 11.8
+            // LÀM TRÒN LÊN 1 SỐ THẬP PHÂN
             let roundedTotal = Math.ceil(rawTotal * 10) / 10;
             
             totalCollect += roundedTotal;
             bill += `${g.name}: $${roundedTotal.toFixed(1)}\n`;
         });
         
-        bill += `--------------------------\n`;
+        bill += `----------\n`;
         bill += `Thực thu: $${totalCollect.toFixed(1)}\n`;
         bill += `Tiền gốc: $${(tienSanGoc + tienCauGoc).toFixed(1)}\n`;
-        let loi = totalCollect - (tienSanGoc + tienCauGoc);
-        bill += `Dư ra: $${loi.toFixed(1)}`;
+        bill += `Dư (lời): $${(totalCollect - (tienSanGoc + tienCauGoc)).toFixed(1)}`;
         
         const resDiv = document.getElementById('ketQua');
         resDiv.style.display = "block";
