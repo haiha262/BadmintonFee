@@ -2,127 +2,69 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badminton Pro - Fixed List</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Badminton Fee - Profit Mode</title>
     <style>
-        body { font-family: -apple-system, sans-serif; padding: 15px; background: #f4f7f9; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
-        h3 { text-align: center; color: #1a73e8; margin-bottom: 20px; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .input-box { flex: 1; }
-        label { font-weight: bold; font-size: 12px; color: #666; display: block; margin-bottom: 5px; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
-        .member-row { display: flex; gap: 5px; margin-bottom: 8px; align-items: center; background: #fff; border: 1px solid #eee; padding: 5px; border-radius: 8px; }
-        .btn-del { background: #ff5252; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; font-size: 12px; }
-        button { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 16px; }
-        .btn-add { background: #e8f0fe; color: #1a73e8; }
-        .btn-calc { background: #1a73e8; color: white; margin-top: 15px; }
-        .result { margin-top: 20px; padding: 15px; background: #e6fffa; border-left: 5px solid #38b2ac; white-space: pre-wrap; font-family: monospace; font-weight: bold; display: none; }
+        :root { --primary: #1a73e8; --success: #34a853; --danger: #ea4335; --bg: #f8f9fa; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; }
+        .container { max-width: 500px; margin: auto; }
+        
+        /* Header cố định để dễ theo dõi */
+        .sticky-header { position: sticky; top: 0; background: white; z-index: 100; padding: 15px; border-radius: 0 0 15px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        
+        h2 { text-align: center; margin: 0 0 15px 0; color: var(--primary); font-size: 1.2rem; }
+        
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .input-group { flex: 1; }
+        label { font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 4px; }
+        
+        /* Danh sách thành viên */
+        .member-card { background: white; margin-bottom: 8px; padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 8px; border: 1px solid #eee; }
+        .m-name { flex: 2; font-weight: 500; }
+        .m-count { flex: 0.6; text-align: center; background: #e8f0fe; }
+        .m-time { flex: 1; text-align: center; }
+        .btn-del { background: #fff1f0; color: var(--danger); border: 1px solid #ffa39e; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+
+        /* Nút chức năng */
+        .actions { margin-top: 15px; }
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; margin-bottom: 10px; }
+        .btn-add { background: #fff; border: 2px dashed var(--primary); color: var(--primary); }
+        .btn-calc { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(26,115,232,0.3); }
+
+        /* Kết quả */
+        #ketQua { margin-top: 20px; padding: 15px; background: #333; color: #00ff00; border-radius: 10px; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px; display: none; }
+        .copy-btn { background: var(--success); color: white; display: none; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h3>🏸 QUẢN LÝ THU TIỀN</h3>
-    
-    <div class="input-group">
-        <div class="input-box">
-            <label>Tổng tiền sân ($):</label>
-            <input type="number" id="tongTienSan" value="44">
-        </div>
-        <div class="input-box">
-            <label>Số quả cầu:</label>
-            <input type="number" id="soCau" value="10">
+<div class="container">
+    <div class="sticky-header">
+        <h2>🏸 BADMINTON CASHIER</h2>
+        <div class="input-row">
+            <div class="input-group">
+                <label>Tiền sân ($)</label>
+                <input type="number" id="tongTienSan" value="44" step="0.1">
+            </div>
+            <div class="input-group">
+                <label>Số cầu</label>
+                <input type="number" id="soCau" value="10">
+            </div>
         </div>
     </div>
 
-    <label style="margin-bottom: 10px; display: block;">Danh sách đánh hôm nay:</label>
-    <div id="memberList">
-        </div>
-    
-    <button class="btn-add" onclick="addMember('', 1, 120)">+ Thêm người ngoài danh sách</button>
-    <button class="btn-calc" onclick="tinhTien()">XUẤT BILL & LÀM TRÒN</button>
+    <div id="memberList"></div>
 
-    <div id="ketQua" class="result"></div>
+    <div class="actions">
+        <button class="btn-add" onclick="addMember('', 1, 120)">+ Thêm người ngoài hội</button>
+        <button class="btn-calc" onclick="tinhTien()">XUẤT BILL & LÀM TRÒN</button>
+        <button id="btnCopy" class="copy-btn" onclick="copyBill()">SAO CHÉP BILL GỬI NHÓM</button>
+    </div>
+
+    <div id="ketQua"></div>
 </div>
 
 <script>
     const GIA_CAU = 2.5;
-    const danhSachGoc = [
-        {n: "Nhà Khương", c: 4}, {n: "Nhà Hà", c: 2}, {n: "Phát", c: 1},
-        {n: "Sam", c: 1}, {n: "Tân", c: 1}, {n: "Nhà Tèo", c: 2},
-        {n: "Nhà Tuấn", c: 2}, {n: "Anthony", c: 1}, {n: "Hoàng", c: 1}, {n: "Hải", c: 1}
-    ];
-
-    // Nạp danh sách khi mở app
-    const memberListDiv = document.getElementById('memberList');
-    danhSachGoc.forEach(item => addMember(item.n, item.c, 120));
-
-    function addMember(name = "", count = 1, time = 120) {
-        const div = document.createElement('div');
-        div.className = 'member-row';
-        div.innerHTML = `
-            <input type="text" placeholder="Tên" class="m-name" value="${name}" style="flex:2">
-            <input type="number" class="m-count" value="${count}" style="flex:0.6" title="SL">
-            <input type="number" class="m-time" value="${time}" style="flex:1" title="Phút">
-            <button class="btn-del" onclick="this.parentElement.remove()">❌</button>
-        `;
-        memberListDiv.appendChild(div);
-    }
-
-    function tinhTien() {
-        const tienSanGoc = parseFloat(document.getElementById('tongTienSan').value) || 0;
-        const tienCauGoc = (parseFloat(document.getElementById('soCau').value) || 0) * GIA_CAU;
-        
-        const names = document.getElementsByClassName('m-name');
-        const counts = document.getElementsByClassName('m-count');
-        const times = document.getElementsByClassName('m-time');
-
-        let totalPlayers = 0;
-        let totalMinutePoints = 0;
-        let groups = [];
-
-        for (let i = 0; i < names.length; i++) {
-            let name = names[i].value.trim();
-            if (name !== "") {
-                let sl = parseFloat(counts[i].value) || 0;
-                let phut = parseFloat(times[i].value) || 0;
-                totalPlayers += sl;
-                totalMinutePoints += (sl * phut);
-                groups.push({ name, sl, phut });
-            }
-        }
-
-        if (totalMinutePoints === 0) return;
-
-        const giaMoiPhutSan = tienSanGoc / totalMinutePoints;
-        const tienCauMoiNguoi = totalPlayers > 0 ? (tienCauGoc / totalPlayers) : 0;
-
-        let totalCollect = 0;
-        let bill = `📝 BILL CHI TIẾT\n----------\n`;
-        
-        groups.forEach(g => {
-            let tSan = g.sl * g.phut * giaMoiPhutSan;
-            let tCau = g.sl * tienCauMoiNguoi;
-            let rawTotal = tSan + tCau;
-            
-            // LÀM TRÒN LÊN 1 SỐ THẬP PHÂN
-            let roundedTotal = Math.ceil(rawTotal * 10) / 10;
-            
-            totalCollect += roundedTotal;
-            bill += `${g.name}: $${roundedTotal.toFixed(1)}\n`;
-        });
-        
-        bill += `----------\n`;
-        bill += `Thực thu: $${totalCollect.toFixed(1)}\n`;
-        bill += `Tiền gốc: $${(tienSanGoc + tienCauGoc).toFixed(1)}\n`;
-        bill += `Dư (lời): $${(totalCollect - (tienSanGoc + tienCauGoc)).toFixed(1)}`;
-        
-        const resDiv = document.getElementById('ketQua');
-        resDiv.style.display = "block";
-        resDiv.innerText = bill;
-    }
-</script>
-
-</body>
-</html>
+    const danhSachG
