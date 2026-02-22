@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Tính Tiền Cầu Lông</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .result { margin-top: 20px; padding: 15px; background: #e9ecef; border-left: 5px solid #28a745; display: none; }
+        h2 { text-align: center; color: #333; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>CẦU LÔNG CALCULATOR</h2>
+    
+    <label>Số lượng sân:</label>
+    <input type="number" id="soSan" value="1">
+    
+    <label>Số giờ mỗi sân:</label>
+    <input type="number" id="soGio" value="2">
+    
+    <label>Số quả cầu đã đánh:</label>
+    <input type="number" id="soCau" placeholder="Ví dụ: 10">
+    
+    <label>Danh sách tên (phẩy nhau):</label>
+    <input type="text" id="danhSach" placeholder="An, Bình, Chi...">
+
+    <button onclick="tinhTien()">TÍNH TIỀN NGAY</button>
+
+    <div id="ketQua" class="result"></div>
+</div>
+
+<script>
+    // Định mức giá (Bạn có thể sửa số ở đây cho khớp với sân của bạn)
+    const GIA_SAN_1H = 22; 
+    const GIA_1_QUA_CAU = 2.5;
+
+    function tinhTien() {
+        const soSan = document.getElementById('soSan').value;
+        const soGio = document.getElementById('soGio').value;
+        const soCau = document.getElementById('soCau').value;
+        const danhSachRaw = document.getElementById('danhSach').value;
+
+        if (!danhSachRaw) {
+            alert("Nhập tên mấy ông đi đánh dùm cái!");
+            return;
+        }
+
+        const danhSach = danhSachRaw.split(',').map(name => name.trim());
+        const soNguoi = danhSach.length;
+
+        // Tính toán
+        const tongTienSan = soSan * soGio * GIA_SAN_1H;
+        const tongTienCau = soCau * GIA_1_QUA_CAU;
+        const tongCong = tongTienSan + tongTienCau;
+        const moiNguoi = tongCong / soNguoi;
+
+        // Hiển thị
+        const vungKetQua = document.getElementById('ketQua');
+        vungKetQua.style.display = "block";
+        vungKetQua.innerHTML = `
+            <strong>TỔNG CHI PHÍ: $${tongCong.toFixed(2)}</strong><br>
+            - Tiền sân: $${tongTienSan}<br>
+            - Tiền cầu: $${tongTienCau}<br>
+            <hr>
+            <strong>Mỗi người đóng: $${moiNguoi.toFixed(2)}</strong><br>
+            <small>Danh sách: ${danhSach.join(', ')}</small>
+        `;
+    }
+</script>
+
+</body>
+</html>
