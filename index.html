@@ -3,68 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Badminton Fee - Profit Mode</title>
+    <title>Badminton Fee Manager - S25 Ultra Edition</title>
     <style>
-        :root { --primary: #1a73e8; --success: #34a853; --danger: #ea4335; --bg: #f8f9fa; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; }
+        :root { 
+            --primary: #0b57d0; 
+            --bg: #f8f9fa; 
+            --card-bg: #ffffff;
+            --danger: #d93025; 
+            --success: #1e8e3e;
+            --warning: #f9ab00;
+            --text: #1f1f1f;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 10px; 
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+        
         .container { max-width: 500px; margin: auto; }
         
-        /* Header cố định để dễ theo dõi */
-        .sticky-header { position: sticky; top: 0; background: white; z-index: 100; padding: 15px; border-radius: 0 0 15px 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        
-        h2 { text-align: center; margin: 0 0 15px 0; color: var(--primary); font-size: 1.2rem; }
-        
-        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .input-group { flex: 1; }
-        label { font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 4px; }
-        
-        /* Danh sách thành viên */
-        .member-card { background: white; margin-bottom: 8px; padding: 10px; border-radius: 10px; display: flex; align-items: center; gap: 8px; border: 1px solid #eee; }
-        .m-name { flex: 2; font-weight: 500; }
-        .m-count { flex: 0.6; text-align: center; background: #e8f0fe; }
-        .m-time { flex: 1; text-align: center; }
-        .btn-del { background: #fff1f0; color: var(--danger); border: 1px solid #ffa39e; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
+        /* App Title */
+        .app-title { 
+            text-align: center; 
+            background: var(--primary); 
+            color: white; 
+            padding: 15px; 
+            border-radius: 16px 16px 4px 4px; 
+            font-weight: 700; 
+            font-size: 18px; 
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
-        /* Nút chức năng */
-        .actions { margin-top: 15px; }
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; margin-bottom: 10px; }
-        .btn-add { background: #fff; border: 2px dashed var(--primary); color: var(--primary); }
-        .btn-calc { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(26,115,232,0.3); }
+        /* Sticky Header */
+        .sticky-header { 
+            position: sticky; 
+            top: 0; 
+            background: white; 
+            z-index: 100; 
+            padding: 15px; 
+            border-radius: 0 0 16px 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            margin-bottom: 12px; 
+        }
+        
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .input-group { display: flex; flex-direction: column; align-items: center; }
+        label { font-size: 10px; font-weight: 700; color: #5f6368; text-transform: uppercase; margin-bottom: 6px; }
+        
+        .header-input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #dadce0; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: 700; 
+            text-align: center; 
+            box-sizing: border-box; 
+            color: var(--primary);
+            background: #fdfdfd;
+        }
+        .header-input:focus { border-color: var(--primary); outline: none; background: white; }
 
-        /* Kết quả */
-        #ketQua { margin-top: 20px; padding: 15px; background: #333; color: #00ff00; border-radius: 10px; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px; display: none; }
-        .copy-btn { background: var(--success); color: white; display: none; }
+        /* Member Row - Compact & Clean */
+        .member-row { 
+            background: var(--card-bg); 
+            margin-bottom: 6px; 
+            padding: 8px 10px; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        
+        .m-name { flex: 3.5; font-size: 14px; padding: 8px; border: 1px solid #eee; border-radius: 6px; min-width: 0; font-weight: 500; }
+        .m-count { flex: 1; font-size: 14px; text-align: center; padding: 8px; border: 1px solid #eee; border-radius: 6px; background: #f1f3f4; font-weight: 700; }
+        .m-time { flex: 1.2; font-size: 14px; text-align: center; padding: 8px; border: 1px solid #eee; border-radius: 6px; background: #fffde7; font-weight: 700; }
+        
+        .btn-del { 
+            background: #fff; 
+            color: var(--danger); 
+            border: 1.5px solid #fce8e6; 
+            width: 32px; height: 32px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 16px; 
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .btn-del:active { background: #fce8e6; transform: scale(0.9); }
+
+        /* Options Box */
+        .options-box { 
+            background: #fff; 
+            padding: 12px; 
+            border-radius: 12px; 
+            margin: 10px 0; 
+            display: flex; 
+            justify-content: space-around; 
+            border: 1px solid #e0e0e0;
+        }
+        .option-item { display: flex; align-items: center; gap: 8px; font-weight: 600; color: #444; cursor: pointer; font-size: 13px; }
+        .option-item input { width: 18px; height: 18px; cursor: pointer; }
+
+        /* Buttons */
+        .actions { margin-top: 15px; padding: 0 5px; }
+        button.main-btn { 
+            width: 100%; 
+            padding: 16px; 
+            border-radius: 12px; 
+            border: none; 
+            font-weight: 700; 
+            font-size: 15px; 
+            cursor: pointer; 
+            margin-bottom: 10px; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-add { background: #fff; border: 2px dashed #dadce0; color: var(--primary); }
+        .btn-add:active { background: #f1f3f4; }
+        
+        .btn-calc { 
+            background: var(--primary); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(11, 87, 208, 0.25); 
+        }
+        .btn-calc:active { transform: scale(0.98); box-shadow: 0 2px 6px rgba(11, 87, 208, 0.2); }
+        
+        /* Result Table */
+        #ketQua { margin-top: 20px; display: none; padding-bottom: 40px; }
+        table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0;
+            background: white; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            font-size: 13px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border: 1px solid #eee;
+        }
+        th, td { padding: 14px 8px; text-align: center; border-bottom: 1px solid #f1f1f1; }
+        th { background: #f8f9fa; color: #5f6368; font-size: 11px; text-transform: uppercase; font-weight: 700; }
+        
+        .summary-row { background: #f1f3f4; font-weight: 600; color: #444; }
+        .total-row { font-weight: 800; background: #e6f4ea; color: var(--success); font-size: 14px; }
+        .profit-row { background: #fef7e0; color: #b06000; font-weight: 800; border-top: 1px solid #feefc3; }
+        
+        .copy-btn { background: var(--success); color: white; margin-top: 12px; }
+        .hide-col { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="app-title">BADMINTON FEE MANAGER</div>
+    
     <div class="sticky-header">
-        <h2>🏸 BADMINTON CASHIER</h2>
-        <div class="input-row">
+        <div class="input-grid">
             <div class="input-group">
-                <label>Tiền sân ($)</label>
-                <input type="number" id="tongTienSan" value="44" step="0.1">
+                <label>SỐ SÂN</label>
+                <input type="number" id="soSan" class="header-input" value="1">
             </div>
             <div class="input-group">
-                <label>Số cầu</label>
-                <input type="number" id="soCau" value="10">
+                <label>GIỜ/SÂN</label>
+                <input type="number" id="soGio" class="header-input" value="2">
+            </div>
+            <div class="input-group">
+                <label>SỐ CẦU</label>
+                <input type="number" id="soCau" class="header-input" value="10">
             </div>
         </div>
     </div>
 
     <div id="memberList"></div>
 
-    <div class="actions">
-        <button class="btn-add" onclick="addMember('', 1, 120)">+ Thêm người ngoài hội</button>
-        <button class="btn-calc" onclick="tinhTien()">XUẤT BILL & LÀM TRÒN</button>
-        <button id="btnCopy" class="copy-btn" onclick="copyBill()">SAO CHÉP BILL GỬI NHÓM</button>
+    <div class="options-box">
+        <label class="option-item"><input type="checkbox" id="optCount" checked> Hiện SL</label>
+        <label class="option-item"><input type="checkbox" id="optTime" checked> Hiện Phút</label>
     </div>
 
-    <div id="ketQua"></div>
+    <div class="actions">
+        <button class="main-btn btn-add" onclick="addMember('', 1, 120)">+ THÊM NGƯỜI CHƠI</button>
+        <button class="main-btn btn-calc" onclick="tinhTien()">XUẤT BIÊN LAI</button>
+        <button id="btnCopy" class="main-btn copy-btn" style="display:none" onclick="copyBill()">SAO CHÉP GỬI NHÓM</button>
+    </div>
+
+    <div id="ketQua">
+        <table id="billTable">
+            <thead>
+                <tr>
+                    <th style="text-align:left; padding-left:15px;">Thành viên</th>
+                    <th class="col-count">SL</th>
+                    <th class="col-time">Phút</th>
+                    <th>Tiền ($)</th>
+                </tr>
+            </thead>
+            <tbody id="billBody"></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    const GIA_CAU = 2.5;
-    const danhSachG
+    const GIA_SAN_1H = 22;
+    const GIA_CAU_1Q = 2.5;
+
+    const danhSachGoc = [
+        {n: "Nhà Khương", c: 4}, {n: "Nhà Hà", c: 2}, {n: "Phát", c: 1},
+        {n: "Sam", c: 1}, {n: "Tân", c: 1}, {n: "Nhà Tèo", c: 2},
+        {n: "Nhà Tuấn", c: 2}, {n: "Anthony", c: 1}, {n: "Hoàng", c: 1}, {n: "Hải", c: 1}
+    ];
+
+    const listDiv = document.getElementById('memberList');
+
+    function addMember(name="", count=1, time=120) {
+        const div = document.createElement('div');
+        div.className = 'member-row';
+        div.innerHTML = `
+            <input type="text" class="m-name" value="${name}" placeholder="Tên...">
+            <input type="number" class="m-count" value="${count}">
+            <input type="number" class="m-time" value="${time}">
+            <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
+        `;
+        listDiv.appendChild(div);
+    }
+
+    danhSachGoc.forEach(i => addMember(i.n, i.c, 120));
+
+    function tinhTien() {
+        const soSan = parseFloat(document.getElementById('soSan').value) || 0;
+        const soGio = parseFloat(document.getElementById('soGio').value) || 0;
+        const soCau = parseFloat(document.getElementById('soCau').value) || 0;
+        const showCount = document.getElementById('optCount').checked;
+        const showTime = document.getElementById('optTime').checked;
+
+        const tienSanGoc = soSan * soGio * GIA_SAN_1H;
+        const tienCauGoc = soCau * GIA_CAU_1Q;
+        const tongGoc = tienSanGoc + tienCauGoc;
+        
+        const names = document.getElementsByClassName('m-name');
+        const counts = document.getElementsByClassName('m-count');
+        const times = document.getElementsByClassName('m-time');
+
+        let totalP = 0, totalMinPts = 0, groups = [];
+
+        for (let i = 0; i < names.length; i++) {
+            let n = names[i].value.trim();
+            if (n) {
+                let c = parseFloat(counts[i].value) || 0;
+                let t = parseFloat(times[i].value) || 0;
+                totalP += c;
+                totalMinPts += (c * t);
+                groups.push({n, c, t});
+            }
+        }
+
+        if (totalMinPts === 0) return;
+
+        const pricePerMin = tienSanGoc / totalMinPts;
+        const pricePerShuttle = totalP > 0 ? (tienCauGoc / totalP) : 0;
+
+        let tableHtml = "";
+        let realTotal = 0;
+
+        groups.forEach(g => {
+            let cost = (g.c * g.t * pricePerMin) + (g.c * pricePerShuttle);
+            let rounded = Math.ceil(cost * 10) / 10;
+            realTotal += rounded;
+            
+            tableHtml += `<tr>
+                <td style="text-align:left; padding-left:15px; font-weight:600; color:#333;">${g.n}</td>
+                <td class="col-count ${showCount ? '' : 'hide-col'}">${g.c}</td>
+                <td class="col-time ${showTime ? '' : 'hide-col'}">${g.t}</td>
+                <td style="font-weight:700; color:#000;">${rounded.toFixed(1)}</td>
+            </tr>`;
+        });
+        
+        const spanCol = (showCount?1:0) + (showTime?1:0) + 1;
+        tableHtml += `<tr class="summary-row"><td colspan="${spanCol}" style="text-align:right">TỔNG GỐC (${totalP} người):</td><td>$${tongGoc.toFixed(1)}</td></tr>`;
+        tableHtml += `<tr class="total-row"><td colspan="${spanCol}" style="text-align:right">THỰC THU:</td><td>$${realTotal.toFixed(1)}</td></tr>`;
+        tableHtml += `<tr class="profit-row"><td colspan="${spanCol}" style="text-align:right">DƯ (LỜI):</td><td>$${(realTotal - tongGoc).toFixed(1)}</td></tr>`;
+
+        document.querySelector('.col-count').classList.toggle('hide-col', !showCount);
+        document.querySelector('.col-time').classList.toggle('hide-col', !showTime);
+
+        document.getElementById('billBody').innerHTML = tableHtml;
+        document.getElementById('ketQua').style.display = 'block';
+        document.getElementById('btnCopy').style.display = 'block';
+        
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function copyBill() {
+        const rows = document.querySelectorAll("#billTable tr");
+        let text = "🏸 BILL CẦU LÔNG " + new Date().toLocaleDateString('vi-VN') + "\n";
+        text += "--------------------------\n";
+        
+        rows.forEach((row) => {
+            const cols = row.querySelectorAll("td:not(.hide-col), th:not(.hide-col)");
+            let rowText = "";
+            cols.forEach((col, idx) => {
+                rowText += col.innerText + (idx === cols.length - 1 ? "" : " | ");
+            });
+            text += rowText + "\n";
+        });
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('btnCopy');
+            btn.innerText = "ĐÃ SAO CHÉP!";
+            btn.style.background = "#137333";
+            setTimeout(() => {
+                btn.innerText = "SAO CHÉP GỬI NHÓM";
+                btn.style.background = "";
+            }, 2000);
+        });
+    }
+</script>
+</body>
+</html>
