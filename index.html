@@ -37,13 +37,13 @@
         .btn-add { background: #fff; border: 2px dashed var(--primary); color: var(--primary); }
         .btn-calc { background: var(--primary); color: white; }
         
-        /* FIX: Ẩn nút tuyệt đối bằng !important */
         .btn-download { background: var(--success); color: white; display: none !important; }
         .btn-share { background: var(--messenger); color: white; display: none !important; }
         
         #captureArea { margin-top: 15px; display: none; background: white; padding: 10px; border-radius: 12px; border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #f0f0f0; padding: 12px 8px; text-align: center; }
+        .summary-row { background: #f0f7ff; font-weight: bold; }
         .total-row { font-weight: 900; background: #f6ffed; color: #389e0d; }
     </style>
 </head>
@@ -86,10 +86,10 @@
 
     <div class="actions">
         <button class="main-btn btn-add" id="t-btnAdd" onclick="addMember('', 1, 120)">+ THÊM NGƯỜI</button>
-        <button class="main-btn btn-calc" id="t-btnCalc" onclick="tinhTien()">XUẤT BILL</button>
+        <button class="main-btn btn-calc" id="t-btnCalc" onclick="tinhTien()">LỤM TIỀN</button>
         
-        <button id="btnDownload" class="main-btn btn-download" onclick="downloadImage()">📸 <span id="t-btnDown">TẢI ẢNH BILL</span></button>
-        <button id="btnShare" class="main-btn btn-share" onclick="shareImage()">💬 <span id="t-btnShare">CHIA SẺ HÌNH BILL</span></button>
+        <button id="btnDownload" class="main-btn btn-download" onclick="downloadImage()">📸 <span id="t-btnDown">TẢI ẢNH</span></button>
+        <button id="btnShare" class="main-btn btn-share" onclick="shareImage()">💬 <span id="t-btnShare">CHIA SẺ CHO ĐỒNG BỌN</span></button>
     </div>
 
     <div id="captureArea">
@@ -98,8 +98,8 @@
             <thead>
                 <tr>
                     <th id="t-thTen">TÊN</th>
-                    <th class="col-count" id="t-thSL">SL</th>
-                    <th class="col-time" id="t-thMin">PHÚT</th>
+                    <th id="t-thSL">SL</th>
+                    <th id="t-thMin">PHÚT</th>
                     <th id="t-thMoney">TIỀN ($)</th>
                 </tr>
             </thead>
@@ -110,9 +110,9 @@
 
 <script>
     const i18n = {
-        vi: { appTitle: "QUẢN LÝ THU TIỀN CẦU LÔNG", btnDown: "TẢI ẢNH BILL", btnShare: "CHIA SẺ HÌNH BILL", billMain: "BILL CHI TIẾT" },
-        en: { appTitle: "BADMINTON FEE MANAGER", btnDown: "DOWNLOAD IMAGE", btnShare: "SHARE IMAGE", billMain: "DETAILED BILL" },
-        zh: { appTitle: "羽毛球费用管理", btnDown: "下载图片", btnShare: "分享账单", billMain: "详细账单" }
+        vi: { appTitle: "QUẢN LÝ THU TIỀN CẦU LÔNG", lblSan: "SỐ SÂN", lblGio: "GIỜ/SÂN", lblCau: "SỐ CẦU", cfgSan: "GIÁ SÂN/H:", cfgCau: "GIÁ CẦU/Q:", optCount: "SL", optTime: "PHÚT", btnAdd: "+ THÊM NGƯỜI", btnCalc: "LỤM TIỀN", btnDown: "TẢI ẢNH", btnShare: "CHIA SẺ CHO ĐỒNG BỌN", thTen: "TÊN", thSL: "SL", thMin: "PHÚT", thMoney: "TIỀN ($)", billMain: "BILL CHI TIẾT", total: "TỔNG TIỀN", totalPeople: "TỔNG NGƯỜI" },
+        en: { appTitle: "BADMINTON FEE MANAGER", lblSan: "COURTS", lblGio: "HOURS", lblCau: "SHUTTLES", cfgSan: "COURT $/H:", cfgCau: "SHUTTLE $:", optCount: "QTY", optTime: "MINS", btnAdd: "+ ADD MEMBER", btnCalc: "GET MONEY", btnDown: "DOWNLOAD", btnShare: "SHARE TO MATES", thTen: "NAME", thSL: "QTY", thMin: "MINS", thMoney: "CASH ($)", billMain: "DETAILED BILL", total: "TOTAL CASH", totalPeople: "TOTAL MEMBERS" },
+        zh: { appTitle: "羽毛球费用管理", lblSan: "场地数", lblGio: "小时", lblCau: "球数", cfgSan: "场地费/时:", cfgCau: "球费/个:", optCount: "人数", optTime: "分钟", btnAdd: "+ 添加成员", btnCalc: "收款", btnDown: "下载", btnShare: "分享给球友", thTen: "姓名", thSL: "人数", thMin: "分钟", thMoney: "金额 ($)", billMain: "详细账单", total: "合计金额", totalPeople: "总人数" }
     };
 
     let currentLang = 'vi';
@@ -120,12 +120,38 @@
         currentLang = lang;
         document.querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('t-appTitle').innerText = i18n[currentLang].appTitle;
+        updateUI();
     }
 
-    const danhSachGoc = [{n: "Nhà Khương", c: 4}, {n: "Nhà Hà", c: 2}, {n: "Phát", c: 1}, {n: "Sam", c: 1}, {n: "Tân", c: 1}, {n: "Nhà Tèo", c: 2}, {n: "Nhà Tuấn", c: 2}, {n: "Anthony", c: 1}, {n: "Hoàng", c: 1}, {n: "Hải", c: 1}];
-    const listDiv = document.getElementById('memberList');
+    function updateUI() {
+        const t = i18n[currentLang];
+        document.getElementById('t-appTitle').innerText = t.appTitle;
+        document.getElementById('t-lblSan').innerText = t.lblSan;
+        document.getElementById('t-lblGio').innerText = t.lblGio;
+        document.getElementById('t-lblCau').innerText = t.lblCau;
+        document.getElementById('t-cfgSan').innerText = t.cfgSan;
+        document.getElementById('t-cfgCau').innerText = t.cfgCau;
+        document.getElementById('t-optCount').innerText = t.optCount;
+        document.getElementById('t-optTime').innerText = t.optTime;
+        document.getElementById('t-btnAdd').innerText = t.btnAdd;
+        document.getElementById('t-btnCalc').innerText = t.btnCalc;
+        document.getElementById('t-btnDown').innerText = t.btnDown;
+        document.getElementById('t-btnShare').innerText = t.btnShare;
+        document.getElementById('t-thTen').innerText = t.thTen;
+        document.getElementById('t-thSL').innerText = t.thSL;
+        document.getElementById('t-thMin').innerText = t.thMin;
+        document.getElementById('t-thMoney').innerText = t.thMoney;
+        if(document.getElementById('captureArea').style.display === 'block') tinhTien(); 
+    }
 
+    const danhSachGoc = [
+        {n: "Nhà Khương", c: 4}, {n: "Nhà Hà", c: 2}, {n: "Phát", c: 1}, 
+        {n: "Sam", c: 1}, {n: "Tân", c: 1}, {n: "Nhà Tèo", c: 2}, 
+        {n: "Nhà Tuấn", c: 2}, {n: "Anthony", c: 1}, {n: "Hoàng", c: 1}, 
+        {n: "Phong", c: 1}, {n: "Andy", c: 1}
+    ];
+
+    const listDiv = document.getElementById('memberList');
     function addMember(name="", count=1, time=120) {
         const div = document.createElement('div');
         div.className = 'member-row';
@@ -139,7 +165,6 @@
         const GIA_SAN_1H = parseFloat(document.getElementById('cfgGiaSan').value) || 0;
         const GIA_CAU_1Q = parseFloat(document.getElementById('cfgGiaCau').value) || 0;
         const soSan = parseFloat(document.getElementById('soSan').value) || 0, soGio = parseFloat(document.getElementById('soGio').value) || 0, soCau = parseFloat(document.getElementById('soCau').value) || 0;
-        
         const tienSanGoc = soSan * soGio * GIA_SAN_1H, tienCauGoc = soCau * GIA_CAU_1Q;
         const names = document.getElementsByClassName('m-name'), counts = document.getElementsByClassName('m-count'), times = document.getElementsByClassName('m-time');
         
@@ -155,23 +180,26 @@
         groups.forEach(g => {
             let cost = (g.c * g.t * pMin) + (g.c * pCau), rounded = Math.ceil(cost * 10) / 10;
             realTotal += rounded;
-            tableHtml += `<tr><td style="text-align:left; padding-left:15px; font-weight:600;">${g.n}</td><td class="col-count">${g.c}</td><td class="col-time">${g.t}</td><td style="font-weight:800;">${rounded.toFixed(1)}</td></tr>`;
+            tableHtml += `<tr><td style="text-align:left; padding-left:15px; font-weight:600;">${g.n}</td><td>${g.c}</td><td>${g.t}</td><td style="font-weight:800;">${rounded.toFixed(1)}</td></tr>`;
         });
         
-        tableHtml += `<tr class="total-row"><td colspan="3" style="text-align:right">TỔNG:</td><td>$${realTotal.toFixed(1)}</td></tr>`;
+        // Thêm thông tin TỔNG NGƯỜI và TỔNG TIỀN
+        tableHtml += `<tr class="summary-row"><td colspan="3" style="text-align:right">${t.totalPeople}:</td><td style="font-weight:800;">${totalP} 👤</td></tr>`;
+        tableHtml += `<tr class="total-row"><td colspan="3" style="text-align:right">${t.total}:</td><td>$${realTotal.toFixed(1)}</td></tr>`;
+        
+        document.getElementById('billHeader').innerText = "🏸 " + t.billMain;
         document.getElementById('billBody').innerHTML = tableHtml;
         
-        // HIỆN BILL VÀ NÚT
         document.getElementById('captureArea').style.display = 'block';
-        document.getElementById('btnDownload').setAttribute("style", "display: flex !important");
-        document.getElementById('btnShare').setAttribute("style", "display: flex !important");
+        document.getElementById('btnDownload').style.setProperty("display", "flex", "important");
+        document.getElementById('btnShare').style.setProperty("display", "flex", "important");
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function downloadImage() {
         html2canvas(document.getElementById('captureArea')).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'bill.png';
+            link.download = 'bill-badminton.png';
             link.href = canvas.toDataURL();
             link.click();
         });
@@ -181,16 +209,12 @@
         const canvas = await html2canvas(document.getElementById('captureArea'));
         canvas.toBlob(async (blob) => {
             const file = new File([blob], 'bill.png', { type: 'image/png' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            if (navigator.share) {
                 try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Bill Cầu Lông',
-                        text: 'Gửi bill chi tiết buổi tập'
-                    });
-                } catch (err) { console.error("Share failed", err); }
+                    await navigator.share({ files: [file], title: 'Bill Cầu Lông', text: 'Lụm tiền nè đồng bọn ơi!' });
+                } catch (err) { console.log("Share failed", err); }
             } else {
-                alert("Trình duyệt của bạn không hỗ trợ chia sẻ file trực tiếp. Hãy tải ảnh về rồi gửi nhé!");
+                alert("Trình duyệt không hỗ trợ chia sẻ. Hãy Tải ảnh về rồi gửi nhé!");
             }
         });
     }
