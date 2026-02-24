@@ -3,103 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Badminton Fee Manager - Wide Name Edition</title>
+    <title>Badminton Fee Manager</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --primary: #1a73e8; --bg: #f8f9fa; --danger: #ff4d4f; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; font-size: 14px; }
-        .container { max-width: 100%; margin: auto; }
+        :root { --primary: #1a73e8; --bg: #f8f9fa; --danger: #ff4d4f; --success: #28a745; --warning: #f2994a; --messenger: #0084ff; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 10px; font-size: 14px; color: #202124; }
+        .container { max-width: 600px; margin: auto; }
         
-        .app-title { text-align: center; background: var(--primary); color: white; padding: 15px; border-radius: 12px 12px 0 0; font-weight: 800; font-size: 16px; letter-spacing: 1px; }
+        .lang-selector { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 10px; padding-right: 5px; }
+        .flag-btn { font-size: 26px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; border: none; background: none; padding: 0; line-height: 1; }
+        .flag-btn.active { filter: grayscale(0%); transform: scale(1.2); }
+
+        .app-title { text-align: center; background: var(--primary); color: white; padding: 15px; border-radius: 12px 12px 0 0; font-weight: 800; font-size: 16px; text-transform: uppercase; }
+        
+        .price-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #eef2f7; padding: 8px 12px; border-bottom: 1px solid #ddd; }
+        .price-group { display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .price-input { width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; text-align: center; color: var(--warning); }
+        .price-label { font-size: 10px; font-weight: 800; color: #555; }
 
         .sticky-header { position: sticky; top: 0; background: white; z-index: 100; padding: 12px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 15px; }
         .input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .input-group { display: flex; flex-direction: column; align-items: center; }
-        label { font-size: 10px; font-weight: 700; color: #666; margin-bottom: 4px; text-transform: uppercase; }
         .header-input { width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 18px; font-weight: bold; text-align: center; box-sizing: border-box; color: var(--primary); }
+        label { font-size: 9px; font-weight: 700; color: #666; text-transform: uppercase; display: block; text-align: center; margin-bottom: 3px; }
 
-        /* Row thành viên - Tối ưu lại tỉ lệ */
-        .member-row { 
-            background: white; margin-bottom: 6px; padding: 8px; border-radius: 10px; 
-            display: flex; align-items: center; gap: 6px; border: 1px solid #eee;
-        }
-
-        /* Ô Tên: Chiếm 6 phần (Rộng nhất) */
-        .m-name { flex: 6; font-size: 15px; padding: 10px 8px; border: 1.5px solid #ddd; border-radius: 6px; min-width: 0; font-weight: 600; }
-        
-        /* Ô Số & Phút: Thu nhỏ lại (Chỉ chiếm 1 phần mỗi ô) */
-        .m-count { width: 45px; font-size: 15px; text-align: center; padding: 10px 0; border: 1.5px solid #ddd; border-radius: 6px; background: #e8f0fe; font-weight: 800; color: #1a73e8; flex-shrink: 0; }
-        .m-time { width: 55px; font-size: 15px; text-align: center; padding: 10px 0; border: 1.5px solid #ddd; border-radius: 6px; background: #fffde7; font-weight: 800; color: #f57f17; flex-shrink: 0; }
-        
-        .btn-del { 
-            background: #fff; color: var(--danger); border: 1.5px solid #ffccc7; 
-            width: 32px; height: 32px; border-radius: 50%; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
-        }
+        .member-row { background: white; margin-bottom: 6px; padding: 8px; border-radius: 10px; display: flex; align-items: center; gap: 6px; border: 1px solid #eee; }
+        .m-name { flex: 1; font-size: 15px; padding: 10px 8px; border: 1.5px solid #ddd; border-radius: 6px; min-width: 0; font-weight: 600; }
+        .m-count { width: 45px; font-size: 15px; text-align: center; padding: 10px 0; border: 1.5px solid #ddd; border-radius: 6px; background: #e8f0fe; font-weight: 800; }
+        .m-time { width: 55px; font-size: 15px; text-align: center; padding: 10px 0; border: 1.5px solid #ddd; border-radius: 6px; background: #fffde7; font-weight: 800; }
+        .btn-del { color: var(--danger); border: 1.5px solid #ffccc7; width: 32px; height: 32px; border-radius: 50%; background: white; font-weight: bold; cursor: pointer; }
 
         .options-box { background: #fff; padding: 12px; border-radius: 12px; margin: 10px 0; display: flex; justify-content: space-around; border: 1px solid #ddd; }
-        .option-item { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 12px; color: #444; }
-        .option-item input { width: 18px; height: 18px; }
-
-        .actions { margin-top: 10px; }
-        button.main-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; font-size: 16px; cursor: pointer; margin-bottom: 8px; }
+        button.main-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-add { background: #fff; border: 2px dashed var(--primary); color: var(--primary); }
-        .btn-calc { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(26,115,232,0.3); }
+        .btn-calc { background: var(--primary); color: white; }
         
-        /* Bảng Bill */
-        #ketQua { margin-top: 15px; display: none; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; font-size: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        /* FIX: Ẩn nút tuyệt đối bằng !important */
+        .btn-download { background: var(--success); color: white; display: none !important; }
+        .btn-share { background: var(--messenger); color: white; display: none !important; }
+        
+        #captureArea { margin-top: 15px; display: none; background: white; padding: 10px; border-radius: 12px; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #f0f0f0; padding: 12px 8px; text-align: center; }
-        th { background: #fafafa; color: #888; font-size: 10px; font-weight: 800; }
-        .summary-row { background: #f0f7ff; font-weight: bold; color: #0056b3; }
         .total-row { font-weight: 900; background: #f6ffed; color: #389e0d; }
-        .profit-row { background: #fff7e6; color: #d46b08; font-weight: 900; border-top: 2px solid #ffd591; }
-        .copy-btn { background: #52c41a; color: white; margin-bottom: 40px; }
-        .hide-col { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="app-title">🏸 BADMINTON FEE MANAGER</div>
+    <div class="lang-selector">
+        <button class="flag-btn active" onclick="setLang('vi', this)">🇻🇳</button>
+        <button class="flag-btn" onclick="setLang('en', this)">🇺🇸</button>
+        <button class="flag-btn" onclick="setLang('zh', this)">🇨🇳</button>
+    </div>
+
+    <div class="app-title" id="t-appTitle">QUẢN LÝ THU TIỀN CẦU LÔNG</div>
+
+    <div class="price-settings">
+        <div class="price-group">
+            <span class="price-label" id="t-cfgSan">GIÁ SÂN/H:</span>
+            <input type="number" id="cfgGiaSan" class="price-input" value="22">
+        </div>
+        <div class="price-group">
+            <span class="price-label" id="t-cfgCau">GIÁ CẦU/Q:</span>
+            <input type="number" id="cfgGiaCau" class="price-input" value="2.5">
+        </div>
+    </div>
     
     <div class="sticky-header">
         <div class="input-grid">
-            <div class="input-group">
-                <label>SỐ SÂN</label>
-                <input type="number" id="soSan" class="header-input" value="1">
-            </div>
-            <div class="input-group">
-                <label>GIỜ/SÂN</label>
-                <input type="number" id="soGio" class="header-input" value="2">
-            </div>
-            <div class="input-group">
-                <label>SỐ CẦU</label>
-                <input type="number" id="soCau" class="header-input" value="10">
-            </div>
+            <div class="input-group"><label id="t-lblSan">SỐ SÂN</label><input type="number" id="soSan" class="header-input" value="1"></div>
+            <div class="input-group"><label id="t-lblGio">GIỜ/SÂN</label><input type="number" id="soGio" class="header-input" value="2"></div>
+            <div class="input-group"><label id="t-lblCau">SỐ CẦU</label><input type="number" id="soCau" class="header-input" value="10"></div>
         </div>
     </div>
 
     <div id="memberList"></div>
 
     <div class="options-box">
-        <label class="option-item"><input type="checkbox" id="optCount" checked> HIỆN SL</label>
-        <label class="option-item"><input type="checkbox" id="optTime" checked> HIỆN PHÚT</label>
+        <label><input type="checkbox" id="optCount" checked> <span id="t-optCount">SL</span></label>
+        <label><input type="checkbox" id="optTime" checked> <span id="t-optTime">PHÚT</span></label>
     </div>
 
     <div class="actions">
-        <button class="main-btn btn-add" onclick="addMember('', 1, 120)">+ THÊM NHÀ / NGƯỜI</button>
-        <button class="main-btn btn-calc" onclick="tinhTien()">XUẤT BILL & LÀM TRÒN</button>
-        <button id="btnCopy" class="main-btn copy-btn" style="display:none" onclick="copyBill()">SAO CHÉP BILL</button>
+        <button class="main-btn btn-add" id="t-btnAdd" onclick="addMember('', 1, 120)">+ THÊM NGƯỜI</button>
+        <button class="main-btn btn-calc" id="t-btnCalc" onclick="tinhTien()">XUẤT BILL</button>
+        
+        <button id="btnDownload" class="main-btn btn-download" onclick="downloadImage()">📸 <span id="t-btnDown">TẢI ẢNH BILL</span></button>
+        <button id="btnShare" class="main-btn btn-share" onclick="shareImage()">💬 <span id="t-btnShare">CHIA SẺ HÌNH BILL</span></button>
     </div>
 
-    <div id="ketQua">
+    <div id="captureArea">
+        <h3 id="billHeader" style="text-align:center; color:#1a73e8; margin-top:0">🏸 BILL CHI TIẾT</h3>
         <table id="billTable">
             <thead>
                 <tr>
-                    <th style="text-align:left; padding-left:15px;">TÊN</th>
-                    <th class="col-count">SL</th>
-                    <th class="col-time">PHÚT</th>
-                    <th>TIỀN ($)</th>
+                    <th id="t-thTen">TÊN</th>
+                    <th class="col-count" id="t-thSL">SL</th>
+                    <th class="col-time" id="t-thMin">PHÚT</th>
+                    <th id="t-thMoney">TIỀN ($)</th>
                 </tr>
             </thead>
             <tbody id="billBody"></tbody>
@@ -108,108 +109,90 @@
 </div>
 
 <script>
-    const GIA_SAN_1H = 22;
-    const GIA_CAU_1Q = 2.5;
+    const i18n = {
+        vi: { appTitle: "QUẢN LÝ THU TIỀN CẦU LÔNG", btnDown: "TẢI ẢNH BILL", btnShare: "CHIA SẺ HÌNH BILL", billMain: "BILL CHI TIẾT" },
+        en: { appTitle: "BADMINTON FEE MANAGER", btnDown: "DOWNLOAD IMAGE", btnShare: "SHARE IMAGE", billMain: "DETAILED BILL" },
+        zh: { appTitle: "羽毛球费用管理", btnDown: "下载图片", btnShare: "分享账单", billMain: "详细账单" }
+    };
 
-    const danhSachGoc = [
-        {n: "Nhà Khương", c: 4}, {n: "Nhà Hà", c: 2}, {n: "Phát", c: 1},
-        {n: "Sam", c: 1}, {n: "Tân", c: 1}, {n: "Nhà Tèo", c: 2},
-        {n: "Nhà Tuấn", c: 2}, {n: "Anthony", c: 1}, {n: "Hoàng", c: 1}, {n: "Hải", c: 1}
-    ];
+    let currentLang = 'vi';
+    function setLang(lang, btn) {
+        currentLang = lang;
+        document.querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('t-appTitle').innerText = i18n[currentLang].appTitle;
+    }
 
+    const danhSachGoc = [{n: "Nhà Khương", c: 4}, {n: "Nhà Hà", c: 2}, {n: "Phát", c: 1}, {n: "Sam", c: 1}, {n: "Tân", c: 1}, {n: "Nhà Tèo", c: 2}, {n: "Nhà Tuấn", c: 2}, {n: "Anthony", c: 1}, {n: "Hoàng", c: 1}, {n: "Hải", c: 1}];
     const listDiv = document.getElementById('memberList');
 
     function addMember(name="", count=1, time=120) {
         const div = document.createElement('div');
         div.className = 'member-row';
-        div.innerHTML = `
-            <input type="text" class="m-name" value="${name}" placeholder="Tên">
-            <input type="number" class="m-count" value="${count}">
-            <input type="number" class="m-time" value="${time}">
-            <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
-        `;
+        div.innerHTML = `<input type="text" class="m-name" value="${name}"><input type="number" class="m-count" value="${count}"><input type="number" class="m-time" value="${time}"><button class="btn-del" onclick="this.parentElement.remove()">✕</button>`;
         listDiv.appendChild(div);
     }
-
     danhSachGoc.forEach(i => addMember(i.n, i.c, 120));
 
     function tinhTien() {
-        const soSan = parseFloat(document.getElementById('soSan').value) || 0;
-        const soGio = parseFloat(document.getElementById('soGio').value) || 0;
-        const soCau = parseFloat(document.getElementById('soCau').value) || 0;
-        const showCount = document.getElementById('optCount').checked;
-        const showTime = document.getElementById('optTime').checked;
-
-        const tienSanGoc = soSan * soGio * GIA_SAN_1H;
-        const tienCauGoc = soCau * GIA_CAU_1Q;
-        const tongGoc = (tienSanGoc + tienCauGoc).toFixed(1);
+        const t = i18n[currentLang];
+        const GIA_SAN_1H = parseFloat(document.getElementById('cfgGiaSan').value) || 0;
+        const GIA_CAU_1Q = parseFloat(document.getElementById('cfgGiaCau').value) || 0;
+        const soSan = parseFloat(document.getElementById('soSan').value) || 0, soGio = parseFloat(document.getElementById('soGio').value) || 0, soCau = parseFloat(document.getElementById('soCau').value) || 0;
         
-        const names = document.getElementsByClassName('m-name');
-        const counts = document.getElementsByClassName('m-count');
-        const times = document.getElementsByClassName('m-time');
-
+        const tienSanGoc = soSan * soGio * GIA_SAN_1H, tienCauGoc = soCau * GIA_CAU_1Q;
+        const names = document.getElementsByClassName('m-name'), counts = document.getElementsByClassName('m-count'), times = document.getElementsByClassName('m-time');
+        
         let totalP = 0, totalMinPts = 0, groups = [];
-
         for (let i = 0; i < names.length; i++) {
             let n = names[i].value.trim();
-            if (n) {
-                let c = parseFloat(counts[i].value) || 0;
-                let t = parseFloat(times[i].value) || 0;
-                totalP += c;
-                totalMinPts += (c * t);
-                groups.push({n, c, t});
-            }
+            if (n) { let c = parseFloat(counts[i].value) || 0, t = parseFloat(times[i].value) || 0; totalP += c; totalMinPts += (c * t); groups.push({n, c, t}); }
         }
-
         if (totalMinPts === 0) return;
 
-        const pricePerMin = tienSanGoc / totalMinPts;
-        const pricePerShuttle = totalP > 0 ? (tienCauGoc / totalP) : 0;
-
-        let tableHtml = "";
-        let realTotal = 0;
-
+        const pMin = tienSanGoc / totalMinPts, pCau = totalP > 0 ? (tienCauGoc / totalP) : 0;
+        let tableHtml = "", realTotal = 0;
         groups.forEach(g => {
-            let cost = (g.c * g.t * pricePerMin) + (g.c * pricePerShuttle);
-            let rounded = Math.ceil(cost * 10) / 10;
+            let cost = (g.c * g.t * pMin) + (g.c * pCau), rounded = Math.ceil(cost * 10) / 10;
             realTotal += rounded;
-            
-            tableHtml += `<tr>
-                <td style="text-align:left; padding-left:15px; font-weight:600;">${g.n}</td>
-                <td class="col-count ${showCount ? '' : 'hide-col'}">${g.c}</td>
-                <td class="col-time ${showTime ? '' : 'hide-col'}">${g.t}</td>
-                <td style="font-weight:800;">${rounded.toFixed(1)}</td>
-            </tr>`;
+            tableHtml += `<tr><td style="text-align:left; padding-left:15px; font-weight:600;">${g.n}</td><td class="col-count">${g.c}</td><td class="col-time">${g.t}</td><td style="font-weight:800;">${rounded.toFixed(1)}</td></tr>`;
         });
         
-        const spanCol = (showCount?1:0) + (showTime?1:0) + 1;
-        tableHtml += `<tr class="summary-row"><td colspan="${spanCol}" style="text-align:right">GỐC (${totalP} người | ${soCau} cầu):</td><td>$${tongGoc}</td></tr>`;
-        tableHtml += `<tr class="total-row"><td colspan="${spanCol}" style="text-align:right">THỰC THU:</td><td>$${realTotal.toFixed(1)}</td></tr>`;
-        tableHtml += `<tr class="profit-row"><td colspan="${spanCol}" style="text-align:right">DƯ (LỜI):</td><td>$${(realTotal - tongGoc).toFixed(1)}</td></tr>`;
-
-        document.querySelector('.col-count').classList.toggle('hide-col', !showCount);
-        document.querySelector('.col-time').classList.toggle('hide-col', !showTime);
-
+        tableHtml += `<tr class="total-row"><td colspan="3" style="text-align:right">TỔNG:</td><td>$${realTotal.toFixed(1)}</td></tr>`;
         document.getElementById('billBody').innerHTML = tableHtml;
-        document.getElementById('ketQua').style.display = 'block';
-        document.getElementById('btnCopy').style.display = 'block';
         
+        // HIỆN BILL VÀ NÚT
+        document.getElementById('captureArea').style.display = 'block';
+        document.getElementById('btnDownload').setAttribute("style", "display: flex !important");
+        document.getElementById('btnShare').setAttribute("style", "display: flex !important");
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    function copyBill() {
-        const rows = document.querySelectorAll("#billTable tr");
-        let text = "🏸 BILL CẦU LÔNG " + new Date().toLocaleDateString('vi-VN') + "\n";
-        text += "--------------------------\n";
-        rows.forEach((row) => {
-            const cols = row.querySelectorAll("td:not(.hide-col), th:not(.hide-col)");
-            let rowText = "";
-            cols.forEach((col, idx) => {
-                rowText += col.innerText + (idx === cols.length - 1 ? "" : " | ");
-            });
-            text += rowText + "\n";
+    function downloadImage() {
+        html2canvas(document.getElementById('captureArea')).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'bill.png';
+            link.href = canvas.toDataURL();
+            link.click();
         });
-        navigator.clipboard.writeText(text).then(() => alert("Đã copy bill!"));
+    }
+
+    async function shareImage() {
+        const canvas = await html2canvas(document.getElementById('captureArea'));
+        canvas.toBlob(async (blob) => {
+            const file = new File([blob], 'bill.png', { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Bill Cầu Lông',
+                        text: 'Gửi bill chi tiết buổi tập'
+                    });
+                } catch (err) { console.error("Share failed", err); }
+            } else {
+                alert("Trình duyệt của bạn không hỗ trợ chia sẻ file trực tiếp. Hãy tải ảnh về rồi gửi nhé!");
+            }
+        });
     }
 </script>
 </body>
