@@ -3,47 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Badminton Fee Manager</title>
+    <title>Badminton Fee Manager Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { --primary: #1a73e8; --bg: #f8f9fa; --danger: #ff4d4f; --success: #28a745; --warning: #f2994a; --messenger: #0084ff; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); margin: 0; padding: 10px; font-size: 14px; color: #202124; }
         .container { max-width: 600px; margin: auto; }
         
-        .lang-selector { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 10px; padding-right: 5px; }
-        .flag-btn { font-size: 26px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; border: none; background: none; padding: 0; line-height: 1; }
+        .lang-selector { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 10px; }
+        .flag-btn { font-size: 26px; cursor: pointer; filter: grayscale(100%); transition: 0.2s; border: none; background: none; padding: 0; }
         .flag-btn.active { filter: grayscale(0%); transform: scale(1.2); }
 
-        .app-title { text-align: center; background: var(--primary); color: white; padding: 15px; border-radius: 12px 12px 0 0; font-weight: 800; font-size: 16px; text-transform: uppercase; }
+        .app-title { text-align: center; background: var(--primary); color: white; padding: 15px; border-radius: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
         
-        .price-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #eef2f7; padding: 8px 12px; border-bottom: 1px solid #ddd; }
-        .price-group { display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .price-input { width: 60px; padding: 5px; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; text-align: center; color: var(--warning); }
-        .price-label { font-size: 10px; font-weight: 800; color: #555; }
+        .section-box { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 10px; border: 1px solid #eee; }
+        .section-title { font-weight: 800; font-size: 11px; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 
-        .sticky-header { position: sticky; top: 0; background: white; z-index: 100; padding: 12px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .header-input { width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 18px; font-weight: bold; text-align: center; box-sizing: border-box; color: var(--primary); }
-        label { font-size: 9px; font-weight: 700; color: #666; text-transform: uppercase; display: block; text-align: center; margin-bottom: 3px; }
+        .slot-config { display: grid; grid-template-columns: 1fr 1fr 1fr 40px; gap: 5px; margin-bottom: 8px; align-items: end; background: #f9f9f9; padding: 8px; border-radius: 8px; }
+        .slot-input { width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-weight: bold; box-sizing: border-box; }
 
-        .member-row { background: white; margin-bottom: 6px; padding: 8px; border-radius: 10px; display: flex; align-items: center; gap: 6px; border: 1px solid #eee; }
-        .m-name { flex: 1; font-size: 15px; padding: 10px 8px; border: 1.5px solid #ddd; border-radius: 6px; min-width: 0; font-weight: 600; }
-        .m-count { width: 45px; font-size: 15px; text-align: center; padding: 10px 0; border: 1.5px solid #ddd; border-radius: 6px; background: #e8f0fe; font-weight: 800; }
-        .m-time { width: 55px; font-size: 15px; text-align: center; padding: 10px 0; border: 1.5px solid #ddd; border-radius: 6px; background: #fffde7; font-weight: 800; }
-        .btn-del { color: var(--danger); border: 1.5px solid #ffccc7; width: 32px; height: 32px; border-radius: 50%; background: white; font-weight: bold; cursor: pointer; }
+        .member-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #eee; }
+        .m-name { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-weight: 600; }
+        .m-count { width: 40px; text-align: center; padding: 8px 0; border: 1px solid #ddd; border-radius: 6px; background: #eef2f7; font-weight: 800; }
+        .checks-container { display: flex; gap: 5px; overflow-x: auto; }
+        .check-item { display: flex; flex-direction: column; align-items: center; min-width: 30px; }
+        .check-item span { font-size: 8px; font-weight: bold; color: #999; }
 
-        .options-box { background: #fff; padding: 12px; border-radius: 12px; margin: 10px 0; display: flex; justify-content: space-around; border: 1px solid #ddd; }
+        .btn-add-slot { background: var(--warning); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 10px; cursor: pointer; }
+        .btn-del { color: var(--danger); border: 1px solid #ffccc7; width: 30px; height: 30px; border-radius: 50%; background: white; cursor: pointer; flex-shrink: 0; }
+
+        .total-people-box { background: #e8f0fe; color: #1a73e8; padding: 10px; border-radius: 8px; font-weight: 800; text-align: center; margin-bottom: 10px; font-size: 15px; }
+
         button.main-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-add { background: #fff; border: 2px dashed var(--primary); color: var(--primary); }
         .btn-calc { background: var(--primary); color: white; }
-        
         .btn-download { background: var(--success); color: white; display: none !important; }
         .btn-share { background: var(--messenger); color: white; display: none !important; }
         
-        #captureArea { margin-top: 15px; display: none; background: white; padding: 10px; border-radius: 12px; border: 1px solid #ddd; }
+        #captureArea { margin-top: 15px; display: none; background: white; padding: 15px; border-radius: 12px; border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #f0f0f0; padding: 12px 8px; text-align: center; }
-        .summary-row { background: #f0f7ff; font-weight: bold; }
+        th, td { border: 1px solid #f0f0f0; padding: 10px 5px; text-align: center; }
+        .summary-row { background: #f0f7ff; font-weight: bold; font-size: 11px; }
         .total-row { font-weight: 900; background: #f6ffed; color: #389e0d; }
     </style>
 </head>
@@ -58,51 +57,36 @@
 
     <div class="app-title" id="t-appTitle">QUẢN LÝ THU TIỀN CẦU LÔNG</div>
 
-    <div class="price-settings">
-        <div class="price-group">
-            <span class="price-label" id="t-cfgSan">GIÁ SÂN/H:</span>
-            <input type="number" id="cfgGiaSan" class="price-input" value="22">
+    <div class="section-box">
+        <div class="section-title">
+            <span id="t-cfgTitle">CẤU HÌNH KHUNG GIỜ</span>
+            <button class="btn-add-slot" id="t-btnAddSlot" onclick="addSlotConfig()">+ THÊM GIỜ</button>
         </div>
-        <div class="price-group">
-            <span class="price-label" id="t-cfgCau">GIÁ CẦU/Q:</span>
-            <input type="number" id="cfgGiaCau" class="price-input" value="2.5">
-        </div>
-    </div>
-    
-    <div class="sticky-header">
-        <div class="input-grid">
-            <div class="input-group"><label id="t-lblSan">SỐ SÂN</label><input type="number" id="soSan" class="header-input" value="1"></div>
-            <div class="input-group"><label id="t-lblGio">GIỜ/SÂN</label><input type="number" id="soGio" class="header-input" value="2"></div>
-            <div class="input-group"><label id="t-lblCau">SỐ CẦU</label><input type="number" id="soCau" class="header-input" value="10"></div>
+        <div id="slotConfigs"></div>
+        <div style="margin-top:10px; font-size:11px; color:#666; display:flex; gap:10px; justify-content: center; flex-wrap: wrap;">
+            <span><span id="t-priceSanLbl">Sân/h</span>: <input type="number" id="priceSan" value="22" style="width:35px"></span>
+            <span><span id="t-priceCauLbl">Cầu/q</span>: <input type="number" id="priceCau" value="2.5" style="width:35px"></span>
+            <span id="t-totalCauLbl">Tổng cầu:</span> <input type="number" id="totalCau" value="13" style="width:35px">
         </div>
     </div>
 
-    <div id="memberList"></div>
-
-    <div class="options-box">
-        <label><input type="checkbox" id="optCount" checked> <span id="t-optCount">SL</span></label>
-        <label><input type="checkbox" id="optTime" checked> <span id="t-optTime">PHÚT</span></label>
+    <div class="section-box">
+        <div class="section-title" id="t-memberTitle">DANH SÁCH NGƯỜI CHƠI</div>
+        <div id="memberList"></div>
+        <div class="total-people-box">
+            <span id="t-totalPeopleLbl">TỔNG SỐ NGƯỜI:</span> <span id="displayTotalPeople">0</span> 👤
+        </div>
+        <button class="main-btn" id="t-btnAddMember" style="background:#fff; border:2px dashed #ccc" onclick="addMember('', 1)">+ THÊM NGƯỜI</button>
     </div>
 
-    <div class="actions">
-        <button class="main-btn btn-add" id="t-btnAdd" onclick="addMember('', 1, 120)">+ THÊM NGƯỜI</button>
-        <button class="main-btn btn-calc" id="t-btnCalc" onclick="tinhTien()">LỤM TIỀN</button>
-        
-        <button id="btnDownload" class="main-btn btn-download" onclick="downloadImage()">📸 <span id="t-btnDown">TẢI ẢNH</span></button>
-        <button id="btnShare" class="main-btn btn-share" onclick="shareImage()">💬 <span id="t-btnShare">CHIA SẺ CHO ĐỒNG BỌN</span></button>
-    </div>
+    <button class="main-btn btn-calc" id="t-btnCalc" onclick="tinhTien()">LỤM TIỀN</button>
+    <button id="btnDownload" class="main-btn btn-download" onclick="downloadImage()">📸 <span id="t-btnDown">TẢI ẢNH</span></button>
+    <button id="btnShare" class="main-btn btn-share" onclick="shareImage()">💬 <span id="t-btnShare">CHIA SẺ CHO ĐỒNG BỌN</span></button>
 
     <div id="captureArea">
         <h3 id="billHeader" style="text-align:center; color:#1a73e8; margin-top:0">🏸 BILL CHI TIẾT</h3>
         <table id="billTable">
-            <thead>
-                <tr>
-                    <th id="t-thTen">TÊN</th>
-                    <th id="t-thSL">SL</th>
-                    <th id="t-thMin">PHÚT</th>
-                    <th id="t-thMoney">TIỀN ($)</th>
-                </tr>
-            </thead>
+            <thead><tr id="tableHeader"></tr></thead>
             <tbody id="billBody"></tbody>
         </table>
     </div>
@@ -110,86 +94,162 @@
 
 <script>
     const i18n = {
-        vi: { appTitle: "QUẢN LÝ THU TIỀN CẦU LÔNG", lblSan: "SỐ SÂN", lblGio: "GIỜ/SÂN", lblCau: "SỐ CẦU", cfgSan: "GIÁ SÂN/H:", cfgCau: "GIÁ CẦU/Q:", optCount: "SL", optTime: "PHÚT", btnAdd: "+ THÊM NGƯỜI", btnCalc: "LỤM TIỀN", btnDown: "TẢI ẢNH", btnShare: "CHIA SẺ CHO ĐỒNG BỌN", thTen: "TÊN", thSL: "SL", thMin: "PHÚT", thMoney: "TIỀN ($)", billMain: "BILL CHI TIẾT", total: "TỔNG TIỀN", totalPeople: "TỔNG NGƯỜI" },
-        en: { appTitle: "BADMINTON FEE MANAGER", lblSan: "COURTS", lblGio: "HOURS", lblCau: "SHUTTLES", cfgSan: "COURT $/H:", cfgCau: "SHUTTLE $:", optCount: "QTY", optTime: "MINS", btnAdd: "+ ADD MEMBER", btnCalc: "GET MONEY", btnDown: "DOWNLOAD", btnShare: "SHARE TO MATES", thTen: "NAME", thSL: "QTY", thMin: "MINS", thMoney: "CASH ($)", billMain: "DETAILED BILL", total: "TOTAL CASH", totalPeople: "TOTAL MEMBERS" },
-        zh: { appTitle: "羽毛球费用管理", lblSan: "场地数", lblGio: "小时", lblCau: "球数", cfgSan: "场地费/时:", cfgCau: "球费/个:", optCount: "人数", optTime: "分钟", btnAdd: "+ 添加成员", btnCalc: "收款", btnDown: "下载", btnShare: "分享给球友", thTen: "姓名", thSL: "人数", thMin: "分钟", thMoney: "金额 ($)", billMain: "详细账单", total: "合计金额", totalPeople: "总人数" }
+        vi: { 
+            appTitle: "QUẢN LÝ THU TIỀN CẦU LÔNG", cfgTitle: "CẤU HÌNH KHUNG GIỜ", totalCauLbl: "Tổng cầu:", priceSanLbl: "Sân/h", priceCauLbl: "Cầu/q", memberTitle: "DANH SÁCH NGƯỜI CHƠI", totalPeopleLbl: "TỔNG SỐ NGƯỜI:", btnAddSlot: "+ THÊM GIỜ", btnAddMember: "+ THÊM NGƯỜI", btnCalc: "LỤM TIỀN", btnDown: "TẢI ẢNH", btnShare: "CHIA SẺ CHO ĐỒNG BỌN", billMain: "BILL CHI TIẾT", total: "TỔNG TIỀN", name: "TÊN", cash: "TIỀN ($)",
+            lblSlotName: "TÊN", lblSlotSan: "SÂN", lblSlotHours: "GIỜ"
+        },
+        en: { 
+            appTitle: "BADMINTON FEE MANAGER", cfgTitle: "HOURS CONFIG", totalCauLbl: "Total Shuttle:", priceSanLbl: "Court/h", priceCauLbl: "Shuttle/q", memberTitle: "PLAYER LIST", totalPeopleLbl: "TOTAL MEMBERS:", btnAddSlot: "+ ADD HOUR", btnAddMember: "+ ADD PLAYER", btnCalc: "GET MONEY", btnDown: "DOWNLOAD", btnShare: "SHARE TO MATES", billMain: "DETAILED BILL", total: "TOTAL CASH", name: "NAME", cash: "CASH ($)",
+            lblSlotName: "NAME", lblSlotSan: "CRT", lblSlotHours: "HRS"
+        },
+        zh: { 
+            appTitle: "羽毛球费用管理", cfgTitle: "时间段配置", totalCauLbl: "总球数:", priceSanLbl: "场地/时", priceCauLbl: "球/个", memberTitle: "球员名单", totalPeopleLbl: "总人数:", btnAddSlot: "+ 添加时间", btnAddMember: "+ 添加球员", btnCalc: "收款", btnDown: "下载", btnShare: "分享给球友", billMain: "详细账单", total: "合计金额", name: "姓名", cash: "金额 ($)",
+            lblSlotName: "名称", lblSlotSan: "场地", lblSlotHours: "小时"
+        }
     };
 
+    let slotCount = 0;
     let currentLang = 'vi';
+    const initialMembers = [
+        {n: "Nhà Khương", c: 4, h1:true, h2:true}, {n: "Nhà Hà", c: 2, h1:true, h2:true}, {n: "Giao", c: 1, h1:true, h2:true}, 
+        {n: "Phát", c: 1, h1:true, h2:true}, {n: "Phong", c: 2, h1:true, h2:true}, {n: "Joy", c: 1, h1:true, h2:true},
+        {n: "Tân", c: 1, h1:false, h2:true}, {n: "Tuấn", c: 1, h1:false, h2:true}, {n: "Tèo", c: 1, h1:false, h2:true}, {n: "Sam", c: 1, h1:false, h2:true}
+    ];
+
     function setLang(lang, btn) {
         currentLang = lang;
         document.querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        updateUI();
-    }
-
-    function updateUI() {
         const t = i18n[currentLang];
         document.getElementById('t-appTitle').innerText = t.appTitle;
-        document.getElementById('t-lblSan').innerText = t.lblSan;
-        document.getElementById('t-lblGio').innerText = t.lblGio;
-        document.getElementById('t-lblCau').innerText = t.lblCau;
-        document.getElementById('t-cfgSan').innerText = t.cfgSan;
-        document.getElementById('t-cfgCau').innerText = t.cfgCau;
-        document.getElementById('t-optCount').innerText = t.optCount;
-        document.getElementById('t-optTime').innerText = t.optTime;
-        document.getElementById('t-btnAdd').innerText = t.btnAdd;
+        document.getElementById('t-cfgTitle').innerText = t.cfgTitle;
+        document.getElementById('t-totalCauLbl').innerText = t.totalCauLbl;
+        document.getElementById('t-priceSanLbl').innerText = t.priceSanLbl;
+        document.getElementById('t-priceCauLbl').innerText = t.priceCauLbl;
+        document.getElementById('t-memberTitle').innerText = t.memberTitle;
+        document.getElementById('t-totalPeopleLbl').innerText = t.totalPeopleLbl;
+        document.getElementById('t-btnAddSlot').innerText = t.btnAddSlot;
+        document.getElementById('t-btnAddMember').innerText = t.btnAddMember;
         document.getElementById('t-btnCalc').innerText = t.btnCalc;
         document.getElementById('t-btnDown').innerText = t.btnDown;
         document.getElementById('t-btnShare').innerText = t.btnShare;
-        document.getElementById('t-thTen').innerText = t.thTen;
-        document.getElementById('t-thSL').innerText = t.thSL;
-        document.getElementById('t-thMin').innerText = t.thMin;
-        document.getElementById('t-thMoney').innerText = t.thMoney;
-        if(document.getElementById('captureArea').style.display === 'block') tinhTien(); 
+        
+        // Cập nhật nhãn trong phần slot động
+        document.querySelectorAll('.slot-lbl-name').forEach(el => el.innerText = t.lblSlotName);
+        document.querySelectorAll('.slot-lbl-san').forEach(el => el.innerText = t.lblSlotSan);
+        document.querySelectorAll('.slot-lbl-hours').forEach(el => el.innerText = t.lblSlotHours);
+
+        if(document.getElementById('captureArea').style.display === 'block') tinhTien();
     }
 
-    const danhSachGoc = [
-        {n: "Nhà Khương", c: 4}, {n: "Nhà Hà", c: 2}, {n: "Phát", c: 1}, 
-        {n: "Sam", c: 1}, {n: "Tân", c: 1}, {n: "Nhà Tèo", c: 2}, 
-        {n: "Nhà Tuấn", c: 2}, {n: "Anthony", c: 1}, {n: "Hoàng", c: 1}, 
-        {n: "Phong", c: 1}, {n: "Andy", c: 1}
-    ];
+    function updateOverallTotal() {
+        let total = 0;
+        document.querySelectorAll('.m-count').forEach(input => total += (parseFloat(input.value) || 0));
+        document.getElementById('displayTotalPeople').innerText = total;
+    }
 
-    const listDiv = document.getElementById('memberList');
-    function addMember(name="", count=1, time=120) {
+    function addSlotConfig(san = 1, hours = 1) {
+        slotCount++;
+        const id = slotCount;
+        const div = document.createElement('div');
+        div.className = 'slot-config';
+        div.id = `slot-cfg-${id}`;
+        const t = i18n[currentLang];
+        div.innerHTML = `
+            <div><label class="slot-lbl-name" style="font-size:9px">${t.lblSlotName}</label><input type="text" class="slot-name" value="G${id}" class="slot-input"></div>
+            <div><label class="slot-lbl-san" style="font-size:9px">${t.lblSlotSan}</label><input type="number" class="slot-san" value="${san}" class="slot-input"></div>
+            <div><label class="slot-lbl-hours" style="font-size:9px">${t.lblSlotHours}</label><input type="number" class="slot-hours" value="${hours}" step="0.5" class="slot-input"></div>
+            <button class="btn-del" onclick="removeSlot(${id})">×</button>
+        `;
+        document.getElementById('slotConfigs').appendChild(div);
+        document.querySelectorAll('.member-row').forEach(row => row.querySelector('.checks-container').appendChild(createCheckItem(id)));
+    }
+
+    function createCheckItem(slotId) {
+        const div = document.createElement('div');
+        div.className = 'check-item';
+        div.innerHTML = `<span>G${slotId}</span><input type="checkbox" class="m-check-slot" data-slot="${slotId}" checked>`;
+        return div;
+    }
+
+    function removeSlot(id) {
+        document.getElementById(`slot-cfg-${id}`).remove();
+        document.querySelectorAll(`.m-check-slot[data-slot="${id}"]`).forEach(el => el.parentElement.remove());
+    }
+
+    function addMember(name = "", count = 1, h1 = true, h2 = true) {
         const div = document.createElement('div');
         div.className = 'member-row';
-        div.innerHTML = `<input type="text" class="m-name" value="${name}"><input type="number" class="m-count" value="${count}"><input type="number" class="m-time" value="${time}"><button class="btn-del" onclick="this.parentElement.remove()">✕</button>`;
-        listDiv.appendChild(div);
+        let checksHtml = "";
+        document.querySelectorAll('.slot-config').forEach((s, index) => {
+            const sid = s.id.replace('slot-cfg-', '');
+            const isChecked = (index === 0) ? h1 : (index === 1 ? h2 : true);
+            checksHtml += `<div class="check-item"><span>G${sid}</span><input type="checkbox" class="m-check-slot" data-slot="${sid}" ${isChecked ? 'checked' : ''}></div>`;
+        });
+        div.innerHTML = `<input type="text" class="m-name" value="${name}" placeholder="Tên"><input type="number" class="m-count" value="${count}" onchange="updateOverallTotal()"><div class="checks-container">${checksHtml}</div><button class="btn-del" onclick="this.parentElement.remove(); updateOverallTotal();">×</button>`;
+        document.getElementById('memberList').appendChild(div);
+        updateOverallTotal();
     }
-    danhSachGoc.forEach(i => addMember(i.n, i.c, 120));
+
+    // Khởi tạo
+    addSlotConfig(2, 1); 
+    addSlotConfig(3, 1); 
+    initialMembers.forEach(m => addMember(m.n, m.c, m.h1, m.h2));
 
     function tinhTien() {
         const t = i18n[currentLang];
-        const GIA_SAN_1H = parseFloat(document.getElementById('cfgGiaSan').value) || 0;
-        const GIA_CAU_1Q = parseFloat(document.getElementById('cfgGiaCau').value) || 0;
-        const soSan = parseFloat(document.getElementById('soSan').value) || 0, soGio = parseFloat(document.getElementById('soGio').value) || 0, soCau = parseFloat(document.getElementById('soCau').value) || 0;
-        const tienSanGoc = soSan * soGio * GIA_SAN_1H, tienCauGoc = soCau * GIA_CAU_1Q;
-        const names = document.getElementsByClassName('m-name'), counts = document.getElementsByClassName('m-count'), times = document.getElementsByClassName('m-time');
+        const pSan = parseFloat(document.getElementById('priceSan').value);
+        const pCau = parseFloat(document.getElementById('priceCau').value);
+        const tCau = parseFloat(document.getElementById('totalCau').value);
         
-        let totalP = 0, totalMinPts = 0, groups = [];
-        for (let i = 0; i < names.length; i++) {
-            let n = names[i].value.trim();
-            if (n) { let c = parseFloat(counts[i].value) || 0, t = parseFloat(times[i].value) || 0; totalP += c; totalMinPts += (c * t); groups.push({n, c, t}); }
-        }
-        if (totalMinPts === 0) return;
-
-        const pMin = tienSanGoc / totalMinPts, pCau = totalP > 0 ? (tienCauGoc / totalP) : 0;
-        let tableHtml = "", realTotal = 0;
-        groups.forEach(g => {
-            let cost = (g.c * g.t * pMin) + (g.c * pCau), rounded = Math.ceil(cost * 10) / 10;
-            realTotal += rounded;
-            tableHtml += `<tr><td style="text-align:left; padding-left:15px; font-weight:600;">${g.n}</td><td>${g.c}</td><td>${g.t}</td><td style="font-weight:800;">${rounded.toFixed(1)}</td></tr>`;
+        let slotsData = [];
+        document.querySelectorAll('.slot-config').forEach(el => {
+            const id = el.id.replace('slot-cfg-', '');
+            slotsData.push({ id, name: el.querySelector('.slot-name').value, moneySan: parseFloat(el.querySelector('.slot-san').value) * parseFloat(el.querySelector('.slot-hours').value) * pSan, totalPeopleInSlot: 0 });
         });
+
+        let members = [];
+        let totalAllSlotsPeople = 0;
+        document.querySelectorAll('.member-row').forEach(row => {
+            const n = row.querySelector('.m-name').value, c = parseFloat(row.querySelector('.m-count').value);
+            let mySlots = [];
+            row.querySelectorAll('.m-check-slot').forEach(ck => {
+                if(ck.checked) {
+                    const sid = ck.getAttribute('data-slot');
+                    mySlots.push(sid);
+                    const sData = slotsData.find(s => s.id == sid);
+                    if(sData) sData.totalPeopleInSlot += c;
+                }
+            });
+            if(n) { members.push({n, c, mySlots}); totalAllSlotsPeople += (c * mySlots.length); }
+        });
+
+        const moneyPerCau = (tCau * pCau) / (totalAllSlotsPeople || 1);
+        let header = `<th>${t.name}</th>`;
+        slotsData.forEach(s => header += `<th>${s.name}</th>`);
+        header += `<th>${t.cash}</th>`;
+        document.getElementById('tableHeader').innerHTML = header;
+
+        let bodyHtml = "", finalGrandTotal = 0;
+        members.forEach(m => {
+            let totalMoney = 0, rowHtml = `<td style="text-align:left"><b>${m.n}</b> (${m.c})</td>`;
+            slotsData.forEach(s => {
+                if(m.mySlots.includes(s.id)) {
+                    totalMoney += m.c * ((s.moneySan / (s.totalPeopleInSlot || 1)) + moneyPerCau);
+                    rowHtml += `<td>✅</td>`;
+                } else rowHtml += `<td>-</td>`;
+            });
+            let rounded = Math.ceil(totalMoney * 10) / 10;
+            finalGrandTotal += rounded;
+            bodyHtml += `<tr>${rowHtml}<td style="font-weight:800; color:var(--primary)">${rounded.toFixed(1)}</td></tr>`;
+        });
+
+        let totalCount = members.reduce((sum, m) => sum + m.c, 0);
+        bodyHtml += `<tr class="summary-row"><td colspan="${slotsData.length + 1}" style="text-align:right">${t.totalPeopleLbl} ${totalCount} 👤 | ${t.totalCauLbl} ${tCau} 🏸</td><td>-</td></tr>`;
+        bodyHtml += `<tr class="total-row"><td colspan="${slotsData.length + 1}" style="text-align:right">${t.total}:</td><td>$${finalGrandTotal.toFixed(1)}</td></tr>`;
         
-        // Thêm thông tin TỔNG NGƯỜI và TỔNG TIỀN
-        tableHtml += `<tr class="summary-row"><td colspan="3" style="text-align:right">${t.totalPeople}:</td><td style="font-weight:800;">${totalP} 👤</td></tr>`;
-        tableHtml += `<tr class="total-row"><td colspan="3" style="text-align:right">${t.total}:</td><td>$${realTotal.toFixed(1)}</td></tr>`;
-        
-        document.getElementById('billHeader').innerText = "🏸 " + t.billMain;
-        document.getElementById('billBody').innerHTML = tableHtml;
-        
+        document.getElementById('billHeader').innerText = "🏸 " + t.billMain + " " + new Date().toLocaleDateString();
+        document.getElementById('billBody').innerHTML = bodyHtml;
         document.getElementById('captureArea').style.display = 'block';
         document.getElementById('btnDownload').style.setProperty("display", "flex", "important");
         document.getElementById('btnShare').style.setProperty("display", "flex", "important");
@@ -209,13 +269,7 @@
         const canvas = await html2canvas(document.getElementById('captureArea'));
         canvas.toBlob(async (blob) => {
             const file = new File([blob], 'bill.png', { type: 'image/png' });
-            if (navigator.share) {
-                try {
-                    await navigator.share({ files: [file], title: 'Bill Cầu Lông', text: 'Lụm tiền nè đồng bọn ơi!' });
-                } catch (err) { console.log("Share failed", err); }
-            } else {
-                alert("Trình duyệt không hỗ trợ chia sẻ. Hãy Tải ảnh về rồi gửi nhé!");
-            }
+            if (navigator.share) await navigator.share({ files: [file], title: 'Bill Cầu Lông', text: 'Lụm tiền nè đồng bọn ơi!' });
         });
     }
 </script>
